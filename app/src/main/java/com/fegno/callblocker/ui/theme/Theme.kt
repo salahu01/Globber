@@ -1,14 +1,11 @@
 package com.fegno.callblocker.ui.theme
 
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.CompositionLocalProvider
 
 private val LightColors = lightColorScheme(
     primary = md_light_primary,
@@ -34,6 +31,11 @@ private val LightColors = lightColorScheme(
     surfaceVariant = md_light_surfaceVariant,
     onSurfaceVariant = md_light_onSurfaceVariant,
     outline = md_light_outline,
+    surfaceContainerLowest = md_light_surfaceContainerLowest,
+    surfaceContainerLow = md_light_surfaceContainerLow,
+    surfaceContainer = md_light_surfaceContainer,
+    surfaceContainerHigh = md_light_surfaceContainerHigh,
+    surfaceContainerHighest = md_light_surfaceContainerHighest,
 )
 
 private val DarkColors = darkColorScheme(
@@ -60,26 +62,27 @@ private val DarkColors = darkColorScheme(
     surfaceVariant = md_dark_surfaceVariant,
     onSurfaceVariant = md_dark_onSurfaceVariant,
     outline = md_dark_outline,
+    surfaceContainerLowest = md_dark_surfaceContainerLowest,
+    surfaceContainerLow = md_dark_surfaceContainerLow,
+    surfaceContainer = md_dark_surfaceContainer,
+    surfaceContainerHigh = md_dark_surfaceContainerHigh,
+    surfaceContainerHighest = md_dark_surfaceContainerHighest,
 )
 
 @Composable
 fun CallBlockerTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit,
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-        darkTheme -> DarkColors
-        else -> LightColors
-    }
+    val colorScheme = if (darkTheme) DarkColors else LightColors
+    val accents = if (darkTheme) DarkAccents else LightAccents
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content,
-    )
+    CompositionLocalProvider(LocalCallBlockerColors provides accents) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            shapes = AppShapes,
+            content = content,
+        )
+    }
 }
