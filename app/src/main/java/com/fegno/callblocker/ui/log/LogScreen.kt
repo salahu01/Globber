@@ -9,16 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -30,6 +22,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fegno.callblocker.data.BlockedCall
 import com.fegno.callblocker.data.PatternType
+import com.fegno.callblocker.ui.components.BentoCard
+import com.fegno.callblocker.ui.components.BentoVariant
+import com.fegno.callblocker.ui.components.CircleIconButton
+import com.fegno.callblocker.ui.components.ScreenHeader
+import com.fegno.callblocker.ui.icons.AppIcons
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -42,45 +39,45 @@ private fun PatternType.displayName(): String = when (this) {
     PatternType.REGEX -> "Regex"
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogScreen(
     modifier: Modifier = Modifier,
     viewModel: LogViewModel = viewModel(),
+    onBack: () -> Unit = {},
 ) {
     val calls by viewModel.calls.collectAsStateWithLifecycle()
     val formatter = remember {
         SimpleDateFormat("MMM d, yyyy  h:mm a", Locale.getDefault())
     }
 
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = { Text("Blocked Calls") },
-                actions = {
-                    IconButton(
-                        onClick = { viewModel.clear() },
-                        enabled = calls.isNotEmpty(),
-                    ) {
-                        Icon(Icons.Filled.Delete, contentDescription = "Clear log")
-                    }
-                },
-            )
-        },
-    ) { innerPadding ->
+    Column(modifier = modifier.fillMaxSize()) {
+        ScreenHeader(
+            title = "Blocked Calls",
+            onBack = onBack,
+            action = {
+                CircleIconButton(
+                    icon = AppIcons.trash,
+                    contentDescription = "Clear log",
+                    onClick = { viewModel.clear() },
+                    enabled = calls.isNotEmpty(),
+                    outlined = true,
+                    tint = MaterialTheme.colorScheme.error,
+                )
+            },
+        )
+
         if (calls.isEmpty()) {
-            EmptyLog(Modifier.padding(innerPadding))
+            EmptyLog(Modifier.fillMaxSize())
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(
                     start = 16.dp,
                     end = 16.dp,
-                    top = innerPadding.calculateTopPadding() + 8.dp,
-                    bottom = innerPadding.calculateBottomPadding() + 16.dp,
+                    top = 8.dp,
+                    bottom = 16.dp,
                 ),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 items(calls, key = { it.id }) { call ->
                     LogRow(call = call, formatted = formatter.format(Date(call.timestamp)))
@@ -93,42 +90,45 @@ fun LogScreen(
 @Composable
 private fun EmptyLog(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(32.dp),
+        modifier = modifier.padding(32.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text = "No blocked calls yet.",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        BentoCard(variant = BentoVariant.Dark) {
+            Text(
+                text = "No blocked calls yet.",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                text = "Blocked calls will show up here.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp),
+            )
+        }
     }
 }
 
 @Composable
 private fun LogRow(call: BlockedCall, formatted: String) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-        ) {
-            Text(
-                text = call.number,
-                style = MaterialTheme.typography.titleMedium,
-                fontFamily = FontFamily.Monospace,
-            )
-            Text(
-                text = "Matched \"${call.matchedPattern}\" (${call.matchedType.displayName()})",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text(
-                text = formatted,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+    BentoCard(variant = BentoVariant.Dark, modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = call.number,
+            style = MaterialTheme.typography.titleMedium,
+            fontFamily = FontFamily.Monospace,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        Text(
+            text = "Matched \"${call.matchedPattern}\" (${call.matchedType.displayName()})",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 2.dp),
+        )
+        Text(
+            text = formatted,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 6.dp),
+        )
     }
 }

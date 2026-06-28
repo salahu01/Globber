@@ -1,6 +1,7 @@
 package com.fegno.callblocker.ui.rules
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,29 +12,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -48,6 +43,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fegno.callblocker.data.BlockRule
 import com.fegno.callblocker.data.PatternType
 import com.fegno.callblocker.data.RuleAction
+import com.fegno.callblocker.ui.components.BentoCard
+import com.fegno.callblocker.ui.components.BentoVariant
+import com.fegno.callblocker.ui.components.CircleIconButton
+import com.fegno.callblocker.ui.components.PillButton
+import com.fegno.callblocker.ui.components.ScreenHeader
+import com.fegno.callblocker.ui.icons.AppIcons
+import com.fegno.callblocker.ui.theme.LocalCallBlockerColors
 
 fun PatternType.displayName(): String = when (this) {
     PatternType.EXACT -> "Exact"
@@ -67,21 +69,33 @@ fun RuleAction.displayName(): String = when (this) {
 fun RulesScreen(
     modifier: Modifier = Modifier,
     viewModel: RulesViewModel = viewModel(),
+    onBack: () -> Unit = {},
 ) {
     val rules by viewModel.rules.collectAsStateWithLifecycle()
+    val accents = LocalCallBlockerColors.current
     // null = no dialog; non-null wrapper holds the rule being edited (or null inside = add)
     var editorState by remember { mutableStateOf<EditorState?>(null) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        containerColor = androidx.compose.ui.graphics.Color.Transparent,
+        topBar = { ScreenHeader(title = "Rules", onBack = onBack) },
         floatingActionButton = {
-            FloatingActionButton(onClick = { editorState = EditorState(null) }) {
-                Icon(Icons.Filled.Add, contentDescription = "Add rule")
-            }
+            ExtendedFloatingActionButton(
+                onClick = { editorState = EditorState(null) },
+                containerColor = accents.accentFill,
+                contentColor = accents.onAccent,
+                shape = RoundedCornerShape(50),
+                icon = { Icon(AppIcons.plus, contentDescription = null) },
+                text = { Text("Add rule") },
+            )
         },
     ) { innerPadding ->
         if (rules.isEmpty()) {
-            EmptyRules(Modifier.padding(innerPadding))
+            EmptyRules(
+                onAdd = { editorState = EditorState(null) },
+                modifier = Modifier.padding(innerPadding),
+            )
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
@@ -91,7 +105,7 @@ fun RulesScreen(
                     top = innerPadding.calculateTopPadding() + 8.dp,
                     bottom = innerPadding.calculateBottomPadding() + 88.dp,
                 ),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 items(rules, key = { it.id }) { rule ->
                     RuleRow(
@@ -134,17 +148,44 @@ fun RulesScreen(
 private class EditorState(val rule: BlockRule?)
 
 @Composable
-private fun EmptyRules(modifier: Modifier = Modifier) {
+private fun EmptyRules(onAdd: () -> Unit, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxSize()
             .padding(32.dp),
         contentAlignment = Alignment.Center,
     ) {
+        BentoCard(variant = BentoVariant.Dark) {
+            Text(
+                text = "No blocking rules yet.",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                text = "Add a number or pattern to start blocking calls.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp, bottom = 16.dp),
+            )
+            PillButton(text = "Add your first rule", onClick = onAdd)
+        }
+    }
+}
+
+@Composable
+private fun TagPill(text: String) {
+    val accents = LocalCallBlockerColors.current
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(50))
+            .border(1.dp, accents.accentFill, RoundedCornerShape(50))
+            .background(accents.accentFill.copy(alpha = 0.10f))
+            .padding(horizontal = 12.dp, vertical = 5.dp),
+    ) {
         Text(
-            text = "No blocking rules yet.\nTap + to add one.",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            text = text,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurface,
         )
     }
 }
@@ -158,60 +199,67 @@ private fun RuleRow(
     onMoveDown: () -> Unit,
     onClick: () -> Unit,
 ) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+    val accents = LocalCallBlockerColors.current
+    BentoCard(
+        variant = BentoVariant.Dark,
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
+        contentPadding = 16,
+    ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, top = 8.dp, bottom = 8.dp, end = 4.dp),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .clickable(onClick = onClick),
-            ) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = rule.label.ifBlank { rule.pattern },
                     style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
                     text = rule.pattern,
                     style = MaterialTheme.typography.bodyMedium,
                     fontFamily = FontFamily.Monospace,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 8.dp),
                 )
-                AssistChip(
-                    onClick = onClick,
-                    label = {
-                        Text("${rule.type.displayName()} · ${rule.action.displayName()}")
-                    },
-                )
-            }
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                IconButton(onClick = onMoveUp) {
-                    Icon(
-                        Icons.Filled.KeyboardArrowUp,
-                        contentDescription = "Move up",
-                    )
-                }
-                IconButton(onClick = onMoveDown) {
-                    Icon(
-                        Icons.Filled.KeyboardArrowDown,
-                        contentDescription = "Move down",
-                    )
-                }
+                TagPill("${rule.type.displayName()} · ${rule.action.displayName()}")
             }
             Switch(
                 checked = rule.enabled,
                 onCheckedChange = { onToggle() },
+                colors = SwitchDefaults.colors(
+                    checkedTrackColor = accents.accentFill,
+                    checkedThumbColor = accents.onAccent,
+                ),
             )
-            IconButton(onClick = onDelete) {
-                Icon(
-                    Icons.Filled.Delete,
-                    contentDescription = "Delete rule",
-                    tint = MaterialTheme.colorScheme.error,
-                )
-            }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            CircleIconButton(
+                icon = AppIcons.chevronUp,
+                contentDescription = "Move up",
+                onClick = onMoveUp,
+                outlined = true,
+            )
+            CircleIconButton(
+                icon = AppIcons.chevronDown,
+                contentDescription = "Move down",
+                onClick = onMoveDown,
+                outlined = true,
+            )
+            Box(modifier = Modifier.weight(1f))
+            CircleIconButton(
+                icon = AppIcons.trash,
+                contentDescription = "Delete rule",
+                onClick = onDelete,
+                outlined = true,
+                tint = MaterialTheme.colorScheme.error,
+            )
         }
     }
 }
@@ -232,6 +280,8 @@ private fun RuleEditorDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        shape = MaterialTheme.shapes.large,
         title = { Text(if (initial == null) "Add rule" else "Edit rule") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -317,17 +367,14 @@ private fun RuleEditorDialog(
             }
         },
         confirmButton = {
-            TextButton(
+            PillButton(
+                text = if (initial == null) "Add" else "Save",
                 onClick = { onConfirm(pattern.trim(), type, action, label.trim()) },
                 enabled = pattern.isNotBlank(),
-            ) {
-                Text(if (initial == null) "Add" else "Save")
-            }
+            )
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
+            PillButton(text = "Cancel", onClick = onDismiss, filled = false)
         },
     )
 }
