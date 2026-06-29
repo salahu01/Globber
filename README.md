@@ -51,9 +51,9 @@ ranges, spoofs prefixes, and burns a new line every call. **Globber blocks the
 
 ## 📸 Screenshots
 
-<div align="center">
-<img src="branding/preview.png" alt="Globber app preview" width="320"/>
-</div>
+| Dashboard | Rules | Blocked calls | Settings |
+|:---:|:---:|:---:|:---:|
+| <img src="screenshots/01-dashboard.png" alt="Dashboard" width="200"/> | <img src="screenshots/02-rules.png" alt="Rules" width="200"/> | <img src="screenshots/03-blocked-calls.png" alt="Blocked calls log" width="200"/> | <img src="screenshots/04-settings.png" alt="Settings" width="200"/> |
 
 ---
 
