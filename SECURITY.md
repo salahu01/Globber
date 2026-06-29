@@ -17,7 +17,7 @@ Instead, please report them privately via one of:
 
 - GitHub's [private vulnerability reporting](https://github.com/salahu01/call-blocker/security/advisories/new)
   (Security → Report a vulnerability)
-- Email: **stuart@fegno.com**
+- Email: **cvsalahu12@gmail.com**
 
 Please include:
 

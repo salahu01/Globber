@@ -39,4 +39,4 @@ This policy may be updated alongside releases. Material changes will be noted in
 
 ## Contact
 
-Questions? Email **stuart@fegno.com** or open an issue.
+Questions? Email **cvsalahu12@gmail.com** or open an issue.
