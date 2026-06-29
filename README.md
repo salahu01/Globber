@@ -34,10 +34,6 @@ ranges, spoofs prefixes, and burns a new line every call. **Globber blocks the
 *0000               →  drop sequential robo-dialers
 ```
 
-<div align="center">
-<img src="branding/preview.png" alt="Globber app preview" width="320"/>
-</div>
-
 ---
 
 ## ✨ Features
@@ -50,6 +46,14 @@ ranges, spoofs prefixes, and burns a new line every call. **Globber blocks the
 | 📜 **Block log** | Review every screened call. |
 | 🎨 **Neon-lime bento UI** | Dark theme with a custom icon set. |
 | 🔒 **Fully private** | Runs 100% on-device. No network permission, no analytics, no ads. |
+
+---
+
+## 📸 Screenshots
+
+<div align="center">
+<img src="branding/preview.png" alt="Globber app preview" width="320"/>
+</div>
 
 ---
 
