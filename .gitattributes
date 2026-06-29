@@ -1,0 +1,25 @@
+# Normalize line endings
+* text=auto eol=lf
+
+# Scripts
+*.sh    text eol=lf
+gradlew text eol=lf
+
+# Windows scripts
+*.bat   text eol=crlf
+gradlew.bat text eol=crlf
+
+# Binary assets
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.webp  binary
+*.gif   binary
+*.ico   binary
+*.jar   binary
+*.keystore binary
+*.apk   binary
+
+# Collapse generated/vendored files in diffs
+gradlew     linguist-vendored
+gradlew.bat linguist-vendored
