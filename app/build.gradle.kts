@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.fegno.callblocker"
+    namespace = "com.salah.callblocker"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.fegno.callblocker"
+        applicationId = "com.salah.callblocker"
         minSdk = 29
         targetSdk = 35
         versionCode = 1

@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "CallBlocker"
+rootProject.name = "Globber"
 include(":app")
