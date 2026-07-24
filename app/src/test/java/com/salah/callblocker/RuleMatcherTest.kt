@@ -106,6 +106,39 @@ class RuleMatcherTest {
     }
 
     @Test
+    fun national_reducesInternationalAndTrunkFormsToSameNsn() {
+        assertEquals("9881234567", RuleMatcher.national("+919881234567"))
+        assertEquals("9881234567", RuleMatcher.national("09881234567"))
+        assertEquals("9881234567", RuleMatcher.national("9881234567"))
+        assertEquals("4085551234", RuleMatcher.national("+14085551234"))
+        // short codes / local numbers are left untouched
+        assertEquals("56789", RuleMatcher.national("56789"))
+    }
+
+    @Test
+    fun exact_nationalNumberMatchesInternationalCallerId() {
+        // The reported bug: a bare national number set as EXACT must block the
+        // caller ID the OS delivers with a country code.
+        val r = rule("9881234567", PatternType.EXACT)
+        assertTrue(RuleMatcher.matches("+919881234567", r))
+        assertTrue(RuleMatcher.matches("09881234567", r))
+        assertFalse(RuleMatcher.matches("+919881234568", r))
+    }
+
+    @Test
+    fun startsWith_nationalNumberMatchesInternationalCallerId() {
+        // Default match type is Starts with; a full national number must still
+        // block the +CC caller ID.
+        val full = rule("9881234567", PatternType.STARTS_WITH)
+        assertTrue(RuleMatcher.matches("+919881234567", full))
+
+        // National prefix (series) blocking still works.
+        val prefix = rule("988", PatternType.STARTS_WITH)
+        assertTrue(RuleMatcher.matches("+919881234567", prefix))
+        assertFalse(RuleMatcher.matches("+919771234567", prefix))
+    }
+
+    @Test
     fun firstMatch_returnsNullWhenOnlyMatchIsDisabled() {
         val rules = listOf(
             rule("+91", PatternType.STARTS_WITH, id = 1, enabled = false),

@@ -38,11 +38,6 @@ class CallBlockerScreeningService : CallScreeningService() {
             val ctx = applicationContext
             val settings = CallBlockerApp.settings(ctx)
 
-            if (settings.allowContactsNow() && ContactsChecker.isKnownContact(ctx, raw)) {
-                respondToCall(callDetails, CallResponse.Builder().build())
-                return@launch
-            }
-
             val match = RuleMatcher.firstMatch(raw, CallBlockerApp.repository(ctx).enabledRules())
             if (match == null) {
                 respondToCall(callDetails, CallResponse.Builder().build())
