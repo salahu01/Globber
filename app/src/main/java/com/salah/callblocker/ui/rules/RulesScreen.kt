@@ -712,13 +712,27 @@ private fun RuleEditorDialog(
 
     Dialog(
         onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false),
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            // Let the dialog window receive IME insets so imePadding() below
+            // actually reacts to the keyboard and keeps the buttons on screen.
+            decorFitsSystemWindows = false,
+        ),
     ) {
+        // Full-screen box gives the card a bounded height so the scrollable
+        // field area can shrink when the keyboard opens and the action buttons
+        // stay pinned and visible. imePadding lives here, not on the card.
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .imePadding()
+                .padding(vertical = 24.dp),
+            contentAlignment = Alignment.Center,
+        ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)
-                .imePadding()
                 .clip(MaterialTheme.shapes.large)
                 .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                 .padding(24.dp),
@@ -833,15 +847,22 @@ private fun RuleEditorDialog(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                PillButton(text = "Cancel", onClick = onDismiss, filled = false)
+                PillButton(
+                    text = "Cancel",
+                    onClick = onDismiss,
+                    filled = false,
+                    modifier = Modifier.weight(1f),
+                )
                 PillButton(
                     text = if (initial == null) "Add" else "Save",
                     onClick = { onConfirm(pattern.trim(), type, action, label.trim()) },
                     enabled = pattern.isNotBlank(),
+                    modifier = Modifier.weight(1f),
                 )
             }
+        }
         }
     }
 }
