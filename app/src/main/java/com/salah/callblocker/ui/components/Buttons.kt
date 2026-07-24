@@ -33,19 +33,25 @@ fun PillButton(
 ) {
     val accents = LocalCallBlockerColors.current
     val shape = RoundedCornerShape(50)
-    val container = if (filled) accents.accentFill else MaterialTheme.colorScheme.surfaceContainerHighest
-    val content = if (filled) accents.onAccent else MaterialTheme.colorScheme.onSurface
+    // Bake the disabled dimming into the colors instead of a Modifier.alpha()
+    // graphics layer: inside a Dialog window the layer can drop the button's
+    // background fill, leaving the label invisible on the dark surface.
+    val dim = if (enabled) 1f else 0.4f
+    val baseContainer =
+        if (filled) accents.accentFill else MaterialTheme.colorScheme.surfaceContainerHighest
+    val baseContent = if (filled) accents.onAccent else MaterialTheme.colorScheme.onSurface
+    val container = baseContainer.copy(alpha = baseContainer.alpha * dim)
+    val content = baseContent.copy(alpha = baseContent.alpha * dim)
     Row(
         modifier = modifier
             .clip(shape)
             .then(
                 if (!filled) Modifier.border(
-                    BorderStroke(1.dp, accents.accentFill),
+                    BorderStroke(1.dp, accents.accentFill.copy(alpha = dim)),
                     shape,
                 ) else Modifier
             )
-            .background(if (filled) container else MaterialTheme.colorScheme.surfaceContainerHighest)
-            .alpha(if (enabled) 1f else 0.4f)
+            .background(container)
             .clickable(enabled = enabled, onClick = onClick)
             .padding(horizontal = 20.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,

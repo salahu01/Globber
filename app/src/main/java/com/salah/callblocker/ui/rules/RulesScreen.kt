@@ -847,13 +847,19 @@ private fun RuleEditorDialog(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                PillButton(text = "Cancel", onClick = onDismiss, filled = false)
+                PillButton(
+                    text = "Cancel",
+                    onClick = onDismiss,
+                    filled = false,
+                    modifier = Modifier.weight(1f),
+                )
                 PillButton(
                     text = if (initial == null) "Add" else "Save",
                     onClick = { onConfirm(pattern.trim(), type, action, label.trim()) },
                     enabled = pattern.isNotBlank(),
+                    modifier = Modifier.weight(1f),
                 )
             }
         }
