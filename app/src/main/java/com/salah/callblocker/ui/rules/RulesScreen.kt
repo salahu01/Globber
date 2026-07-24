@@ -714,11 +714,20 @@ private fun RuleEditorDialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false),
     ) {
+        // Full-screen box gives the card a bounded height so the scrollable
+        // field area can shrink when the keyboard opens and the action buttons
+        // stay pinned and visible. imePadding lives here, not on the card.
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .imePadding()
+                .padding(vertical = 24.dp),
+            contentAlignment = Alignment.Center,
+        ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)
-                .imePadding()
                 .clip(MaterialTheme.shapes.large)
                 .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                 .padding(24.dp),
@@ -842,6 +851,7 @@ private fun RuleEditorDialog(
                     enabled = pattern.isNotBlank(),
                 )
             }
+        }
         }
     }
 }
