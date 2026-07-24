@@ -712,7 +712,12 @@ private fun RuleEditorDialog(
 
     Dialog(
         onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false),
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            // Let the dialog window receive IME insets so imePadding() below
+            // actually reacts to the keyboard and keeps the buttons on screen.
+            decorFitsSystemWindows = false,
+        ),
     ) {
         // Full-screen box gives the card a bounded height so the scrollable
         // field area can shrink when the keyboard opens and the action buttons
