@@ -37,11 +37,9 @@ fun SettingsScreen(
     vm: SettingsViewModel,
     onExport: () -> Unit,
     onImport: () -> Unit,
-    onEnableContactsAllowlist: () -> Unit,
     onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    val allowContacts by vm.allowContacts.collectAsStateWithLifecycle()
     val notifyOnBlock by vm.notifyOnBlock.collectAsStateWithLifecycle()
     val blockUnknown by vm.blockUnknown.collectAsStateWithLifecycle()
     val themeMode by vm.themeMode.collectAsStateWithLifecycle()
@@ -59,20 +57,6 @@ fun SettingsScreen(
         ) {
         SectionHeader(title = "Calls")
         BentoCard(variant = BentoVariant.Dark, modifier = Modifier.fillMaxWidth()) {
-            SettingSwitchRow(
-                title = "Allow calls from contacts",
-                subtitle = "Calls from people saved in your contacts are never blocked.",
-                checked = allowContacts,
-                onCheckedChange = { enabled ->
-                    if (enabled) {
-                        onEnableContactsAllowlist()
-                        vm.setAllowContacts(true)
-                    } else {
-                        vm.setAllowContacts(false)
-                    }
-                },
-            )
-            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f))
             SettingSwitchRow(
                 title = "Block unknown numbers",
                 subtitle = "Reject calls with no caller ID (private or withheld numbers).",

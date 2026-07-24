@@ -15,12 +15,10 @@ class SettingsViewModel(app: Application) : AndroidViewModel(app) {
     private val settings: SettingsStore = CallBlockerApp.settings(app)
     private val repo: RuleRepository = CallBlockerApp.repository(app)
 
-    val allowContacts: StateFlow<Boolean> = settings.allowContacts
     val notifyOnBlock: StateFlow<Boolean> = settings.notifyOnBlock
     val blockUnknown: StateFlow<Boolean> = settings.blockUnknown
     val themeMode: StateFlow<ThemeMode> = settings.themeMode
 
-    fun setAllowContacts(v: Boolean) = settings.setAllowContacts(v)
     fun setNotifyOnBlock(v: Boolean) = settings.setNotifyOnBlock(v)
     fun setBlockUnknown(v: Boolean) = settings.setBlockUnknown(v)
     fun setThemeMode(v: ThemeMode) = settings.setThemeMode(v)

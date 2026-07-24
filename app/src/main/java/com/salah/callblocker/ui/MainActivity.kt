@@ -156,12 +156,6 @@ private fun CallBlockerApp() {
         }
     }
 
-    val contactsPermLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { granted ->
-        settingsVm.setAllowContacts(granted)
-    }
-
     val notifPermLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { }
@@ -207,9 +201,6 @@ private fun CallBlockerApp() {
                     vm = settingsVm,
                     onExport = { exportLauncher.launch("callblocker-rules.json") },
                     onImport = { importLauncher.launch(arrayOf("application/json", "text/*")) },
-                    onEnableContactsAllowlist = {
-                        contactsPermLauncher.launch(Manifest.permission.READ_CONTACTS)
-                    },
                     onBack = { screen = DASHBOARD },
                     modifier = Modifier.fillMaxSize(),
                 )
