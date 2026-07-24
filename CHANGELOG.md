@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.5] - 2026-07-24
+
+### Fixed
+- Blocking rules entered as a plain national number (e.g. `9605…`) now match
+  incoming calls whose caller ID includes the country code (`+91…`). The matcher
+  compares both the full E.164 form and a country-code-stripped national form, so
+  **Starts with** / **Exact** rules block the number the way you see it locally.
+- Add/Save button in the add-rule dialog is no longer pushed behind the keyboard,
+  and no longer renders invisible (the filled button lost its background inside the
+  dialog window). The dialog now keeps its actions on screen and clearly visible.
+
+### Removed
+- "Allow calls from contacts" setting. Android never routes calls from saved
+  contacts to a call-screening app, so the toggle could not affect whether a
+  contact was blocked and was misleading. The `READ_CONTACTS` permission is gone.
+
+### Changed
+- Bumped `versionCode` 5 → 6, `versionName` 1.0.4 → 1.0.5.
+
 ## [1.0.4] - 2026-06-29
 
 ### Changed
